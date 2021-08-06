@@ -1,0 +1,15 @@
+loading loci list
+alleleCounter started counting alleles with 1 threads
+alleleCounter finished counting alleles 1 threads
+returning alleleCounter
+finished returning substitutions
+alleleCounter took 0.037320900708436966 minutes
+loading loci list
+alleleCounter started counting alleles with 1 threads
+Traceback (most recent call last):
+  File "/Users/sl17/Languages/python3/bin/alleleCounter", line 33, in <module>
+    sys.exit(load_entry_point('alleleCounter==0.0.1', 'console_scripts', 'alleleCounter')())
+  File "/Users/sl17/Languages/python3/lib/python3.8/site-packages/alleleCounter-0.0.1-py3.8.egg/alleleCounter/__main__.py", line 17, in main
+  File "/Users/sl17/Languages/python3/lib/python3.8/site-packages/alleleCounter-0.0.1-py3.8.egg/alleleCounter/alleleCounter.py", line 135, in count
+  File "/Users/sl17/Languages/python3/lib/python3.8/site-packages/alleleCounter-0.0.1-py3.8.egg/alleleCounter/alleleCounter.py", line 89, in bam2alleleCounts
+KeyError: ('20', 200000)

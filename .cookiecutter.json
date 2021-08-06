@@ -1,0 +1,10 @@
+{
+  "_template": "gh:sjin09/pynew",
+  "author": "Sangjin Lee",
+  "email": "sl17@sanger.ac.uk",
+  "friendly_name": "alleleCounter",
+  "github_user": "sjin09",
+  "package_name": "alleleCounter",
+  "project_name": "alleleCounter",
+  "version": "0.0.1"
+}

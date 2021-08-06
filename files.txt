@@ -1,0 +1,6 @@
+/Users/sl17/Languages/python3/lib/python3.8/site-packages/alleleCounter-0.0.1-py3.8.egg
+/Users/sl17/Languages/python3/bin/alleleCounter
+/Users/sl17/Languages/python3/bin/natsort
+/Users/sl17/Languages/python3/bin/f2py
+/Users/sl17/Languages/python3/bin/f2py3
+/Users/sl17/Languages/python3/bin/f2py3.8
