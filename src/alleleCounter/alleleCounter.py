@@ -4,7 +4,6 @@ import time
 import pysam
 import alleleCounter.cslib 
 import alleleCounter.bamlib
-## import alleleCounter.caller
 import multiprocessing as mp
 from typing import Dict, List, Tuple
 
@@ -79,8 +78,8 @@ def bam2alleleCounts(
             pos2counts[(chrom, pos)]["-"] = 0
             pos2counts[(chrom, pos)]["bq"] = []
         counter += 1 
-        if counter == 2:
-            break
+        # if counter == 2:
+        #     break
     
     counter = 0
     if min_bq == 1:
@@ -102,8 +101,8 @@ def bam2alleleCounts(
                                 pos2counts[(chrom, pos)]["-"] += 1
                                 pos2counts[(chrom, pos)]["bq"].append(bq)
             counter += 1 
-            if counter == 2:
-                break
+            # if counter == 2:
+            #     break
     return pos2counts
 
 def count(
