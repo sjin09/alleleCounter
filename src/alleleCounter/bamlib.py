@@ -1,6 +1,7 @@
 import sys
 import pysam
 
+
 def get_tname2tsize(bamfile: str):
     tname2tsize_hsh = {}
     bamfile = pysam.AlignmentFile(bamfile, "rb", header=True)
@@ -14,4 +15,3 @@ def get_tname2tsize(bamfile: str):
             tname2tsize_hsh[tname] = tsize
     bamfile.close()
     return tname2tsize_hsh
-
