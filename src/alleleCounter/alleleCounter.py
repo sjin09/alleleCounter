@@ -29,7 +29,7 @@ class BAM:
 
 genome_allelecount_lst = []
 def collect_allelecounts(result):
-    genome_allelecount_lst.extend(result)
+    genome_allelecount_lst.append(result)
 
 
 def load_loci(loci: str) -> Dict[str, Tuple[str, int, int]]:
@@ -142,15 +142,25 @@ def count(
     print("alleleCounter started counting alleles with {} threads".format(threads))
     if threads == 1:
         alignments = pysam.AlignmentFile(bam_file, "rb", header=True)
-        for chrom, loci in chrom_loci_hsh.items():
-            result = bam2alleleCounts(alignments, chrom_loci_hsh[chrom], min_bq, min_mapq)
+        for _chrom, chrom_loci in chrom_loci_hsh.items():
+            result = bam2alleleCounts(alignments, chrom_loci, min_bq, min_mapq)
             genome_allelecount_lst.append(result)
         alignments.close()
     elif threads > 1:
-        # p = mp.Pool(threads)
-        # p.join()
-        # p.close()
-        pass
+        p = mp.Pool(threads)
+        alignments = pysam.AlignmentFile(bam_file, "rb")
+        chrom_bam2allelecount_arg_lst = [(
+            alignments,
+            chrom_loci,
+            min_bq, 
+            min_mapq
+        ) for _chrom, chrom_loci, in chrom_loci_hsh.items()]
+        a = p.starmap(bam2alleleCounts, chrom_bam2allelecount_arg_lst)
+        print(a)
+        # p.starmap_async(bam2alleleCounts, chrom_bam2allelecount_arg_lst, callback = collect_allelecounts)
+        alignments.close()
+        p.close()
+        p.join()
     print("alleleCounter finished counting alleles {} threads".format(threads))
 
     print("returning alleleCounts")

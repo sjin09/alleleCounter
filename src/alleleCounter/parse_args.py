@@ -36,7 +36,7 @@ def parse_args(program_version, arguments=sys.argv[1:]):
         "--loci",
         type=str,
         required=False,
-        help="target loci (chr pos)",
+        help="target loci (chr\tpos\tend)",
     )
     parser.add_argument(
         "--region",
