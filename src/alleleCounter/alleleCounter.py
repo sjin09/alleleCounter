@@ -108,7 +108,8 @@ def bam2alleleCounts(
                                 pos2counts[(chrom, pos)]["bq"].append(bq)
     alignments.close()
 
-    o = open("{}.alleleCounts".format(chrom)) 
+    print("returning allelecounts for {}".format(chrom))
+    o = open("{}.alleleCounts".format(chrom), "w") 
     for coord in pos2counts:
         chrom, pos = coord
         A = pos2counts[coord]["A"]
@@ -132,7 +133,7 @@ def bam2alleleCounts(
                 )
             )
     o.close()
-
+    print("finished returning allelecounts for {}".format(chrom))
 
 def count(
     bam_file: str,
@@ -183,7 +184,7 @@ def count(
         p.starmap_async(
             bam2alleleCounts,
             chrom_bam2allelecount_arg_lst,
-            callback=collect_allelecounts,
+            # callback=collect_allelecounts,
         )
         p.close()
         p.join()
