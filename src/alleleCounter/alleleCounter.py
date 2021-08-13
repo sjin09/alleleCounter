@@ -107,7 +107,31 @@ def bam2alleleCounts(
                                 pos2counts[(chrom, pos)]["-"] += 1
                                 pos2counts[(chrom, pos)]["bq"].append(bq)
     alignments.close()
-    return pos2counts
+
+    o = open("{}.alleleCounts".format(chrom)) 
+    for coord in pos2counts:
+        chrom, pos = coord
+        A = pos2counts[coord]["A"]
+        T = pos2counts[coord]["T"]
+        G = pos2counts[coord]["G"]
+        C = pos2counts[coord]["C"]
+        del_count = pos2counts[coord]["-"]
+        total_count = sum([A, T, G, C, del_count])
+        if total_count == 0:
+            if del_count != 0:
+                o.write(
+                    "{}\t{}\t0\t0\t0\t0\t{}\t0\t0\n".format(chrom, pos, del_count)
+                )
+        else:
+            mean_bq = sum(pos2counts[coord]["bq"]) / len(
+                pos2counts[coord]["bq"]
+            )
+            o.write(
+                "{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{:.2f}\n".format(
+                    chrom, pos, A, T, G, C, del_count, total_count, mean_bq
+                )
+            )
+    o.close()
 
 
 def count(
@@ -147,8 +171,9 @@ def count(
     print("alleleCounter started counting alleles with {} threads".format(threads))
     if threads == 1:
         for _chrom, chrom_loci in chrom_loci_hsh.items():
-            result = bam2alleleCounts(bam_file, chrom_loci, min_bq, min_mapq)
-            genome_allelecount_lst.append(result)
+            bam2alleleCounts(bam_file, chrom_loci, min_bq, min_mapq)
+            # result = bam2alleleCounts(bam_file, chrom_loci, min_bq, min_mapq)
+            # genome_allelecount_lst.append(result)
     elif threads > 1:
         p = mp.Pool(threads)
         chrom_bam2allelecount_arg_lst = [
@@ -164,38 +189,43 @@ def count(
         p.join()
     print("alleleCounter finished counting alleles {} threads".format(threads))
 
-    print("returning alleleCounts")
+    print("merging alleleCounts")
     o = open(out_file, "w")
     o.write(
         "{}\n".format(
             "\t".join(["CHROM", "POS", "A", "T", "G", "C", "DEL", "TOTAL", "BQ"])
         )
     )
-    for chrom_allelecount in genome_allelecount_lst:
-        for coord in chrom_allelecount:
-            chrom, pos = coord
-            A = chrom_allelecount[coord]["A"]
-            T = chrom_allelecount[coord]["T"]
-            G = chrom_allelecount[coord]["G"]
-            C = chrom_allelecount[coord]["C"]
-            del_count = chrom_allelecount[coord]["-"]
-            total_count = sum([A, T, G, C, del_count])
-            if total_count == 0:
-                if del_count != 0:
-                    o.write(
-                        "{}\t{}\t0\t0\t0\t0\t{}\t0\t0\n".format(chrom, pos, del_count)
-                    )
-            else:
-                mean_bq = sum(chrom_allelecount[coord]["bq"]) / len(
-                    chrom_allelecount[coord]["bq"]
-                )
-                o.write(
-                    "{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{:.2f}\n".format(
-                        chrom, pos, A, T, G, C, del_count, total_count, mean_bq
-                    )
-                )
-    o.close()
-    print("finished returning alleleCounts")
+    for target in target_lst:
+        for line in open("{}.alleleCounts".format("target")).readlines():
+            if line.startswith("CHROM"): continue
+            o.write("{}".format(line))
+    o.close()  
+    # for chrom_allelecount in genome_allelecount_lst:
+    #     for coord in chrom_allelecount:
+    #         chrom, pos = coord
+    #         A = chrom_allelecount[coord]["A"]
+    #         T = chrom_allelecount[coord]["T"]
+    #         G = chrom_allelecount[coord]["G"]
+    #         C = chrom_allelecount[coord]["C"]
+    #         del_count = chrom_allelecount[coord]["-"]
+    #         total_count = sum([A, T, G, C, del_count])
+    #         if total_count == 0:
+    #             if del_count != 0:
+    #                 o.write(
+    #                     "{}\t{}\t0\t0\t0\t0\t{}\t0\t0\n".format(chrom, pos, del_count)
+    #                 )
+    #         else:
+    #             mean_bq = sum(chrom_allelecount[coord]["bq"]) / len(
+    #                 chrom_allelecount[coord]["bq"]
+    #             )
+    #             o.write(
+    #                 "{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{:.2f}\n".format(
+    #                     chrom, pos, A, T, G, C, del_count, total_count, mean_bq
+    #                 )
+    #             )
+    # o.close()
+    # print("finished returning alleleCounts")
 
     end = time.time() / 60
     duration = end - start
