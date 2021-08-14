@@ -28,7 +28,7 @@ def parse_args(program_version, arguments=sys.argv[1:]):
     parser.add_argument(
         "--min_mapq",
         type=int,
-        default=60,
+        default=1,
         required=False,
         help="minimum mapping quality score (default = 1)",
     )

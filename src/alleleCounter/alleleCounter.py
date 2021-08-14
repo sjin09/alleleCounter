@@ -73,7 +73,7 @@ def bam2alleleCounts(
     o = open("{}.alleleCounts".format(chrom), "w") 
     o.write(
         "{}\n".format(
-            "\t".join(["CHROM", "POS", "A", "T", "G", "C", "DEL", "TOTAL", "BQ"])
+            "\t".join(["CHROM", "POS", "A", "T", "G", "C", "DEL", "TOTAL", "BQ", "MAPQ"])
         )
     )
 
@@ -89,6 +89,7 @@ def bam2alleleCounts(
                 pos2counts[(chrom, pos)]["C"] = 0
                 pos2counts[(chrom, pos)]["-"] = 0
                 pos2counts[(chrom, pos)]["bq"] = []
+                pos2counts[(chrom, pos)]["mapq"] = []
 
             for line in alignments.fetch(chrom, loci_start, loci_end):
                 read = BAM(line)
@@ -111,10 +112,12 @@ def bam2alleleCounts(
                             if (chrom, pos) in pos2counts:
                                 pos2counts[(chrom, pos)][alt] += 1
                                 pos2counts[(chrom, pos)]["bq"].append(bq)
+                                pos2counts[(chrom, pos)]["mapq"].append(read.mapq)
                         elif allele_state == 4:
                             if (chrom, pos) in pos2counts:
                                 pos2counts[(chrom, pos)]["-"] += 1
                                 pos2counts[(chrom, pos)]["bq"].append(bq)
+                                pos2counts[(chrom, pos)]["mapq"].append(read.mapq)
             for coord in pos2counts:
                 chrom, pos = coord
                 A = pos2counts[coord]["A"]
@@ -125,16 +128,22 @@ def bam2alleleCounts(
                 total_count = sum([A, T, G, C, del_count])
                 if total_count == 0:
                     if del_count != 0:
+                        mean_mapq = sum(pos2counts[coord]["mapq"]) / len(
+                            pos2counts[coord]["mapq"]
+                        )
                         o.write(
-                            "{}\t{}\t0\t0\t0\t0\t{}\t0\t0\n".format(chrom, pos, del_count)
+                            "{}\t{}\t0\t0\t0\t0\t{}\t0\t0\t{:.2f}\n".format(chrom, pos, del_count, mean_mapq)
                         )
                 else:
                     mean_bq = sum(pos2counts[coord]["bq"]) / len(
                         pos2counts[coord]["bq"]
                     )
+                    mean_mapq = sum(pos2counts[coord]["mapq"]) / len(
+                        pos2counts[coord]["mapq"]
+                    )
                     o.write(
-                        "{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{:.2f}\n".format(
-                            chrom, pos, A, T, G, C, del_count, total_count, mean_bq
+                        "{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{:.2f}\t{:.2f}\n".format(
+                            chrom, pos, A, T, G, C, del_count, total_count, mean_bq, mean_mapq
                         )
                     )
     alignments.close()
