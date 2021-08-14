@@ -30,7 +30,7 @@ def parse_args(program_version, arguments=sys.argv[1:]):
         type=int,
         default=60,
         required=False,
-        help="minimum mapping quality score (default = 60)",
+        help="minimum mapping quality score (default = 1)",
     )
     parser.add_argument(
         "--loci",
