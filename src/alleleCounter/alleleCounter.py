@@ -158,8 +158,8 @@ def count(
     min_bq: int,
     min_mapq: int,
     threads: int,
-    version: str,
-    out_file: str,
+    merge: bool,
+    out_file: str
 ) -> None:
 
     state = 1
@@ -203,21 +203,22 @@ def count(
         p.join()
     print("alleleCounter finished counting alleles {} threads".format(threads))
 
-    print("merging alleleCounts")
-    o = open(out_file, "w")
-    o.write(
-        "{}\n".format(
-            "\t".join(["CHROM", "POS", "A", "T", "G", "C", "DEL", "TOTAL", "BQ"])
+    if merge:
+        print("merging alleleCounts")
+        o = open(out_file, "w")
+        o.write(
+            "{}\n".format(
+                "\t".join(["CHROM", "POS", "A", "T", "G", "C", "DEL", "TOTAL", "BQ"])
+            )
         )
-    )
-    target_lst = natsort.natsorted(target_lst)
-    for target in target_lst:
-        for line in open("{}.alleleCounts".format(target)).readlines():
-            if line.startswith("CHROM"): continue
-            o.write("{}".format(line))
-        os.remove("{}.alleleCounts".format(target))
-    o.close()  
-    print("finished merging alleleCounts")
+        target_lst = natsort.natsorted(target_lst)
+        for target in target_lst:
+            for line in open("{}.alleleCounts".format(target)).readlines():
+                if line.startswith("CHROM"): continue
+                o.write("{}".format(line))
+            os.remove("{}.alleleCounts".format(target))
+        o.close()  
+        print("finished merging alleleCounts")
 
     end = time.time() / 60
     duration = end - start
