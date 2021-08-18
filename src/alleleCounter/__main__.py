@@ -21,7 +21,7 @@ def main():
         options.min_bq,  # int: 1 - 93
         options.min_mapq,  # int: 0 - 60
         options.threads,  # number of threads
-        options.merge
+        options.merge,  # bool: merge or not to merge
         options.txt,  # output # himut vcf file
     )
 
