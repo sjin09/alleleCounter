@@ -58,6 +58,12 @@ def parse_args(program_version, arguments=sys.argv[1:]):
         help="maximum number of threads to be used (default = 1)",
     )
     parser.add_argument(
+        "--merge",
+        required=False,
+        action="store_true",
+        help="merge alleleCounts (default = False)",
+    )
+    parser.add_argument(
         "-o",
         "--txt",
         type=str,
